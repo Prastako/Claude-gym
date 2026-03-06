@@ -1,0 +1,1469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PPL Training Plan — Progressive Overload</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --surface2: #181818;
+    --border: #2a2a2a;
+    --accent: #c8f135;
+    --accent2: #f1a035;
+    --accent3: #35c8f1;
+    --accent4: #f13560;
+    --text: #e8e8e8;
+    --muted: #666;
+    --warning: #f1a035;
+    --warmup-col: #9b7fff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .noise {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    opacity: 0.4;
+  }
+
+  .wrapper { position: relative; z-index: 1; max-width: 960px; margin: 0 auto; padding: 48px 24px 80px; }
+
+  /* HERO */
+  .hero { margin-bottom: 56px; }
+  .hero-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .hero h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(52px, 10vw, 96px);
+    line-height: 0.9;
+    letter-spacing: 0.02em;
+    color: #fff;
+    margin-bottom: 24px;
+  }
+  .hero h1 span { color: var(--accent); }
+  .hero-desc {
+    max-width: 620px;
+    color: #999;
+    font-size: 15px;
+    line-height: 1.8;
+    border-left: 2px solid var(--accent);
+    padding-left: 20px;
+  }
+
+  /* FAILURE RULE BANNER */
+  .failure-banner {
+    background: #0d0d0d;
+    border: 1px solid #2a2a2a;
+    border-left: 3px solid var(--accent4);
+    border-radius: 6px;
+    padding: 20px 24px;
+    margin-bottom: 40px;
+  }
+  .failure-banner-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 0.06em;
+    color: var(--accent4);
+    margin-bottom: 10px;
+  }
+  .failure-banner p {
+    font-size: 13.5px;
+    color: #999;
+    line-height: 1.75;
+    max-width: 780px;
+  }
+  .failure-banner p + p { margin-top: 8px; }
+  .failure-banner strong { color: #ccc; }
+
+  /* SCHEDULE */
+  .schedule { margin-bottom: 56px; }
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .week-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+  }
+  @media (max-width: 640px) { .week-grid { grid-template-columns: repeat(4, 1fr); } }
+
+  .day-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px 8px;
+    text-align: center;
+  }
+  .day-box.active  { border-color: var(--accent);  background: #0f1700; }
+  .day-box.active2 { border-color: var(--accent3); background: #001417; }
+  .day-box.active3 { border-color: var(--accent2); background: #170c00; }
+  .day-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .day-label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.05em;
+    color: var(--text);
+  }
+  .day-box.active  .day-label { color: var(--accent); }
+  .day-box.active2 .day-label { color: var(--accent3); }
+  .day-box.active3 .day-label { color: var(--accent2); }
+
+  /* DIVIDER */
+  .divider { height: 1px; background: var(--border); margin: 52px 0; }
+
+  /* WORKOUT SECTION */
+  .workout-section { margin-bottom: 56px; }
+
+  /* SECTION HEADER ROW */
+  .workout-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 4px;
+  }
+  .workout-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(32px, 6vw, 52px);
+    letter-spacing: 0.04em;
+  }
+  .workout-title.push { color: var(--accent); }
+  .workout-title.pull { color: var(--accent3); }
+  .workout-title.legs { color: var(--accent2); }
+  .workout-title.rest-title { color: var(--muted); }
+
+  /* TIME PILLS */
+  .time-pills {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .time-pill {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid;
+    white-space: nowrap;
+  }
+  .time-pill.warmup-pill  { border-color: var(--warmup-col); color: var(--warmup-col); }
+  .time-pill.workout-pill { border-color: #444; color: #888; }
+  .time-pill.total-pill   { border-color: #555; color: #aaa; background: #161616; }
+
+  .workout-subtitle {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .workout-intro {
+    color: #888;
+    font-size: 14px;
+    line-height: 1.75;
+    max-width: 700px;
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* WARMUP BLOCK */
+  .warmup-block { margin-bottom: 24px; }
+
+  .warmup-toggle {
+    width: 100%;
+    background: #0d0f0a;
+    border: 1px solid var(--warmup-col);
+    border-radius: 6px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: background 0.15s;
+    gap: 12px;
+  }
+  .warmup-toggle:hover { background: #111406; }
+  .warmup-block.open .warmup-toggle { border-radius: 6px 6px 0 0; }
+
+  .warmup-toggle-left { display: flex; align-items: center; gap: 12px; }
+  .warmup-icon { font-size: 16px; line-height: 1; }
+  .warmup-toggle-label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 17px;
+    letter-spacing: 0.08em;
+    color: var(--warmup-col);
+  }
+  .warmup-toggle-sub {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: #555;
+    text-transform: uppercase;
+  }
+  .warmup-chevron {
+    font-size: 12px;
+    color: var(--warmup-col);
+    transition: transform 0.2s;
+    flex-shrink: 0;
+  }
+  .warmup-block.open .warmup-chevron { transform: rotate(180deg); }
+
+  .warmup-body {
+    display: none;
+    background: #0b0d09;
+    border: 1px solid var(--warmup-col);
+    border-top: none;
+    border-radius: 0 0 6px 6px;
+    overflow: hidden;
+  }
+  .warmup-block.open .warmup-body { display: block; }
+
+  .warmup-note {
+    padding: 14px 18px;
+    font-size: 13px;
+    color: #777;
+    line-height: 1.65;
+    border-bottom: 1px solid #1e2818;
+  }
+
+  .warmup-header-row {
+    display: grid;
+    grid-template-columns: 1fr 90px 110px 140px;
+    gap: 12px;
+    padding: 8px 18px;
+    background: #0d0f0a;
+    border-bottom: 1px solid #1e2818;
+  }
+  @media (max-width: 620px) {
+    .warmup-header-row { grid-template-columns: 1fr 80px; }
+    .warmup-h-sets2, .warmup-h-time2 { display: none; }
+  }
+  .warmup-h {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    color: #444;
+    text-transform: uppercase;
+  }
+
+  .warmup-exercise {
+    display: grid;
+    grid-template-columns: 1fr 90px 110px 140px;
+    gap: 12px;
+    align-items: start;
+    padding: 12px 18px;
+    border-bottom: 1px solid #161a10;
+    transition: background 0.1s;
+  }
+  .warmup-exercise:last-child { border-bottom: none; }
+  .warmup-exercise:hover { background: #0f1309; }
+  @media (max-width: 620px) {
+    .warmup-exercise { grid-template-columns: 1fr 80px; }
+    .warmup-ex-sets, .warmup-ex-time { display: none; }
+  }
+
+  .warmup-ex-name { font-size: 13.5px; font-weight: 500; color: #ccc; }
+  .warmup-ex-detail { font-size: 12px; color: #555; margin-top: 3px; line-height: 1.4; }
+  .warmup-ex-sets {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--warmup-col);
+    padding-top: 2px;
+  }
+  .warmup-ex-time {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: #444;
+    padding-top: 2px;
+  }
+  .warmup-ex-purpose {
+    font-size: 12px;
+    color: #555;
+    line-height: 1.5;
+    padding-top: 2px;
+  }
+
+  /* MUSCLE GROUP */
+  .muscle-group { margin-bottom: 32px; }
+  .muscle-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .muscle-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  .exercise-list { display: flex; flex-direction: column; gap: 10px; }
+
+  /* EXERCISE CARD */
+  .exercise {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  .exercise:hover { border-color: #3a3a3a; }
+  .exercise.open  { border-color: #3a3a3a; }
+
+  .exercise-header {
+    display: grid;
+    grid-template-columns: 1fr auto auto auto;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+  }
+  @media (max-width: 520px) {
+    .exercise-header { grid-template-columns: 1fr auto auto; }
+    .ex-equip { display: none; }
+  }
+
+  .ex-name { font-size: 14px; font-weight: 600; color: var(--text); }
+
+  .fail-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 3px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+    border: 1px solid;
+    flex-shrink: 0;
+  }
+  .fail-badge.no-fail { border-color: #2a2a2a; color: #555; }
+  .fail-badge.to-fail { border-color: #5a1a1a; color: var(--accent4); background: #1a0808; }
+  .fail-badge.rpe     { border-color: #1a3a20; color: #5fcf7a; background: #0a150c; }
+
+  .ex-equip {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    text-transform: uppercase;
+    background: var(--surface2);
+    padding: 3px 8px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .ex-sets {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    white-space: nowrap;
+  }
+
+  .exercise-body {
+    display: none;
+    padding: 0 18px 16px;
+    border-top: 1px solid var(--border);
+  }
+  .exercise.open .exercise-body { display: block; }
+
+  .ex-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding-top: 14px; }
+  @media (max-width: 500px) { .ex-row { grid-template-columns: 1fr; } }
+
+  .ex-detail-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .ex-detail-val { font-size: 13px; color: #bbb; line-height: 1.65; }
+
+  .stretch-note {
+    margin-top: 12px;
+    padding: 10px 14px;
+    background: #0d0d0d;
+    border-left: 2px solid var(--accent4);
+    border-radius: 0 4px 4px 0;
+    font-size: 13px;
+    color: #999;
+  }
+  .stretch-note strong {
+    color: var(--accent4);
+    font-size: 10px;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 3px;
+  }
+
+  .warn-note {
+    margin-top: 10px;
+    padding: 10px 14px;
+    background: #130d00;
+    border-left: 2px solid var(--warning);
+    border-radius: 0 4px 4px 0;
+    font-size: 13px;
+    color: #999;
+  }
+  .warn-note strong {
+    color: var(--warning);
+    font-size: 10px;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 3px;
+  }
+
+  .fail-detail {
+    margin-top: 10px;
+    padding: 10px 14px;
+    background: #0d0606;
+    border-left: 2px solid #5a1a1a;
+    border-radius: 0 4px 4px 0;
+    font-size: 13px;
+    color: #999;
+  }
+  .fail-detail strong {
+    color: #d97070;
+    font-size: 10px;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 3px;
+  }
+
+  .chevron {
+    display: inline-block;
+    margin-left: 4px;
+    color: var(--muted);
+    font-size: 11px;
+    transition: transform 0.15s;
+  }
+  .exercise.open .chevron { transform: rotate(180deg); }
+
+  /* REST DAYS */
+  .rest-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 540px) { .rest-grid { grid-template-columns: 1fr; } }
+  .rest-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+  }
+  .rest-card h4 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 0.05em;
+    margin-bottom: 10px;
+    color: #ccc;
+  }
+  .rest-card ul { list-style: none; }
+  .rest-card ul li {
+    font-size: 13px;
+    color: #888;
+    padding: 5px 0;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 8px;
+  }
+  .rest-card ul li:last-child { border-bottom: none; }
+  .rest-card ul li::before { content: '→'; color: var(--muted); flex-shrink: 0; }
+
+  /* PO TIPS */
+  .tips-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 24px; }
+  @media (max-width: 640px) { .tips-grid { grid-template-columns: 1fr; } }
+  .tip-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 16px;
+  }
+  .tip-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    color: var(--border);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .tip-box p { font-size: 13px; color: #888; line-height: 1.6; }
+</style>
+</head>
+<body>
+<div class="noise"></div>
+<div class="wrapper">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-tag">// push · pull · legs — progressive overload — lower intermediate</div>
+    <h1>PUSH<br><span>PULL</span><br>LEGS</h1>
+    <p class="hero-desc">
+      Three sessions. Three movement themes. One rule: the numbers go up over time.
+      Expand the <span style="color:var(--warmup-col)">warmup</span> at the top of each session before touching any working weight.
+      Click any exercise to open technique cues, stretch focus, and failure guidance.
+    </p>
+  </div>
+
+  <!-- FAILURE RULE BANNER -->
+  <div class="failure-banner">
+    <div class="failure-banner-title">// Training to Failure — The General Rule</div>
+    <p>
+      <strong>Not every set should go to failure</strong> — and for progressive overload, most shouldn't. Failure on early sets degrades form and burns neural resources needed for the sets that follow. The goal is <strong>proximity to failure</strong>, not failure itself.
+    </p>
+    <p>
+      Use this as your guide: <strong>Compound lifts</strong> (bench, squat, row, deadlift) — stop 1–2 reps before failure on all sets. Leave reps in reserve. <strong>Isolation and machine exercises</strong> — the last set can be taken to clean technical failure. <strong>Core exercises</strong> — never to muscular failure; position quality is the only metric. Each exercise below is tagged: <span style="color:var(--accent4);font-family:'DM Mono',monospace;font-size:11px;">TO FAILURE</span>, <span style="color:#5fcf7a;font-family:'DM Mono',monospace;font-size:11px;">RPE 8–9</span> (1–2 reps left in the tank), or <span style="color:#555;font-family:'DM Mono',monospace;font-size:11px;">QUALITY REPS</span> (stop at form breakdown, not exhaustion).
+    </p>
+  </div>
+
+  <!-- SCHEDULE -->
+  <div class="schedule">
+    <div class="section-label">// suggested weekly layout — any 3 non-consecutive days</div>
+    <div class="week-grid">
+      <div class="day-box active" ><div class="day-name">Mon</div><div class="day-label">Push</div></div>
+      <div class="day-box"       ><div class="day-name">Tue</div><div class="day-label">Rest</div></div>
+      <div class="day-box active2"><div class="day-name">Wed</div><div class="day-label">Pull</div></div>
+      <div class="day-box"       ><div class="day-name">Thu</div><div class="day-label">Rest</div></div>
+      <div class="day-box active3"><div class="day-name">Fri</div><div class="day-label">Legs</div></div>
+      <div class="day-box"       ><div class="day-name">Sat</div><div class="day-label">Active</div></div>
+      <div class="day-box"       ><div class="day-name">Sun</div><div class="day-label">Rest</div></div>
+    </div>
+    <p style="font-size:13px;color:var(--muted);margin-top:12px;">Avoid Push and Pull on back-to-back days — your anterior shoulder connects both sessions and needs 48h between them.</p>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ═══ PUSH DAY ═══ -->
+  <div class="workout-section">
+    <div class="workout-header">
+      <div class="workout-title push">PUSH DAY</div>
+      <div class="time-pills">
+        <span class="time-pill warmup-pill">▸ Warmup ~12 min</span>
+        <span class="time-pill workout-pill">Workout ~55 min</span>
+        <span class="time-pill total-pill">Total ~67 min</span>
+      </div>
+    </div>
+    <div class="workout-subtitle">Chest · Shoulders · Triceps · Core (anti-extension)</div>
+    <p class="workout-intro">
+      Lead with heavy horizontal pressing when your CNS is fresh. Follow with incline and isolation work as fatigue accumulates. Shoulder isolation comes after chest — your anterior delt is already pre-fatigued from pressing, so you'll need less weight than you expect. Core finisher uses anti-extension patterns: the most functionally accurate way to train the rectus abdominis. Rest 2–3 min between compound sets, 60–90 sec between isolation sets.
+    </p>
+
+    <!-- PUSH WARMUP -->
+    <div class="warmup-block" id="wu-push">
+      <div class="warmup-toggle" onclick="toggleWarmup('wu-push')">
+        <div class="warmup-toggle-left">
+          <span class="warmup-icon">🔥</span>
+          <div>
+            <div class="warmup-toggle-label">Warmup — Push Day</div>
+            <div class="warmup-toggle-sub">6 exercises · ~12 min · do this before touching any working weight</div>
+          </div>
+        </div>
+        <span class="warmup-chevron">▾</span>
+      </div>
+      <div class="warmup-body">
+        <div class="warmup-note">
+          Warmup serves three functions: raise core temperature, prime the exact movement patterns you're about to load, and activate specific muscles before they're needed under load. <strong>None of these are working sets</strong> — use 30–40% of your working weight on bar exercises. Do not rush. A 12-minute warmup prevents months of shoulder injury downtime.
+        </div>
+        <div class="warmup-header-row">
+          <span class="warmup-h">Exercise</span>
+          <span class="warmup-h warmup-h-sets2">Sets / Reps</span>
+          <span class="warmup-h warmup-h-time2">Est. Time</span>
+          <span class="warmup-h">Purpose</span>
+        </div>
+        <div class="warmup-exercise">
+          <div><div class="warmup-ex-name">Arm Circles + Cross-Body Swings</div><div class="warmup-ex-detail">Bodyweight — large controlled circles both directions, then swings across chest</div></div>
+          <div class="warmup-ex-sets">2 × 20</div>
+          <div class="warmup-ex-time">~1.5 min</div>
+          <div class="warmup-ex-purpose">Lubricates the glenohumeral joint. Increases synovial fluid circulation before pressing loads arrive.</div>
+        </div>
+        <div class="warmup-exercise">
+          <div><div class="warmup-ex-name">Band Pull-Apart</div><div class="warmup-ex-detail">Light resistance band — hands shoulder-width, pull band apart at chest height</div></div>
+          <div class="warmup-ex-sets">2 × 15</div>
+          <div class="warmup-ex-time">~1.5 min</div>
+          <div class="warmup-ex-purpose">Activates rear delts and external rotators. Counteracts internal rotation dominance and warms the rotator cuff before pressing loads.</div>
+        </div>
+        <div class="warmup-exercise">
+          <div><div class="warmup-ex-name">Scapular Push-Up</div><div class="warmup-ex-detail">Plank position — protract and retract shoulder blades only, arms stay straight throughout</div></div>
+          <div class="warmup-ex-sets">2 × 12</div>
+          <div class="warmup-ex-time">~1.5 min</div>
+          <div class="warmup-ex-purpose">Activates serratus anterior and teaches scapular control — critical for safe pressing and preventing AC joint impingement.</div>
+        </div>
+        <div class="warmup-exercise">
+          <div><div class="warmup-ex-name">Incline Push-Up (slow tempo)</div><div class="warmup-ex-detail">Hands elevated on bench — 3 sec down, 1 sec pause at chest, press. Full ROM.</div></div>
+          <div class="warmup-ex-sets">2 × 10</div>
+          <div class="warmup-ex-time">~2 min</div>
+          <div class="warmup-ex-purpose">Movement pattern rehearsal. Gets chest, tricep, and anterior delt firing in the exact pressing pathway before load is added.</div>
+        </div>
+        <div class="warmup-exercise">
+          <div><div class="warmup-ex-name">Empty Bar Bench Press</div><div class="warmup-ex-detail">Just the bar — slow, deliberate, full ROM. Focus on scapular retraction and bar path.</div></div>
+          <div class="warmup-ex-sets">1 × 15</div>
+          <div class="warmup-ex-time">~2 min</div>
+          <div class="warmup-ex-purpose">Grooves the exact bar path for your working sets. Identifies tightness or pain before working weight is on the bar. Non-negotiable step.</div>
+        </div>
+        <div class="warmup-exercise">
+          <div><div class="warmup-ex-name">Ramp-Up Sets — Bench Press</div><div class="warmup-ex-detail">~55% of working weight × 6 reps, then ~80% × 3 reps. Not tiring — just neural priming.</div></div>
+          <div class="warmup-ex-sets">2 ramp sets</div>
+          <div class="warmup-ex-time">~3 min</div>
+          <div class="warmup-ex-purpose">Progressive neural activation under load. Ramp-up sets should never cause fatigue — if they do, your working weight is too close to your maximum.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHEST -->
+    <div class="muscle-group">
+      <div class="muscle-label">Chest — primary</div>
+      <div class="exercise-list">
+
+        <div class="exercise" onclick="toggle(this)">
+          <div class="exercise-header">
+            <div class="ex-name">Barbell Bench Press</div>
+            <div class="fail-badge rpe">RPE 8–9</div>
+            <div class="ex-equip">Barbell</div>
+            <div class="ex-sets">4 × 6–8 <span class="chevron">▾</span></div>
+          </div>
+          <div class="exercise-body">
+            <div class="ex-row">
+              <div><div class="ex-detail-label">Technique</div><div class="ex-detail-val">Retract and depress scapulae before unracking. Slight arch, feet planted. Touch mid-chest. Elbows at ~45°, not flared to 90°. Drive bar in a slight J-curve toward the uprights at lockout.</div></div>
+              <div><div class="ex-detail-label">Progressive Overload</div><div class="ex-detail-val">When you hit 8 clean reps on all 4 sets, add 2.5 kg next session. If you miss 6 reps, hold the weight, focus on tempo control, and retry next session before adding load.</div></div>
+            </div>
+            <div class="stretch-note"><strong>🎯 Feel it here</strong>Deep stretch in the lower-outer pec at the bottom of each rep. If you feel the front shoulder instead of the chest — widen grip by one finger width and retest.</div>
+            <div class="fail-detail"><strong>⚡ Failure guidance</strong>Stop 1–2 reps before failure on sets 1–3. Set 4 can push to RPE 9. Never grind a rep where bar speed drops to near-zero without a reliable spotter and safety catches set.</div>
+          </div>
+        </div>
+
+        <div class="exercise" onclick="toggle(this)">
+          <div class="exercise-header">
+            <div class="ex-name">Incline Dumbbell Press</div>
+            <div class="fail-badge rpe">RPE 8–9</div>
+            <div class="ex-equip">Dumbbells</div>
+            <div class="ex-sets">3 × 8–12 <span class="chevron">▾</span></div>
+          </div>
+          <div class="exercise-body">
+            <div class="ex-row">
+              <div><div class="ex-detail-label">Technique</div><div class="ex-detail-val">Bench at 30–40°. Dumbbells meet at top with slight internal rotation. Lower slowly — 3 sec eccentric, full stretch at bottom. Never bounce off the bottom position.</div></div>
+              <div><div class="ex-detail-label">Why include</div><div class="ex-detail-val">Targets the clavicular head of pectoralis major — the line that makes the chest look full from the front. Each arm works independently, eliminating the stronger side compensating for the weaker.</div></div>
+            </div>
+            <div class="stretch-note"><strong>🎯 Feel it here</strong>Upper chest just below the collarbone. Think of spreading your arms wide at the bottom — that stretch across the upper pec is what you're loading.</div>
+            <div class="fail-detail"><strong>⚡ Failure guidance</strong>Last set can approach true failure — dumbbells are safer to fail on than a bar. Stop when shoulder position degrades or you can no longer control the eccentric.</div>
+          </div>
+        </div>
+
+        <div class="exercise" onclick="toggle(this)">
+          <div class="exercise-header">
+            <div class="ex-name">Cable Crossover / Pec Deck</div>
+            <div class="fail-badge to-fail">To Failure</div>
+            <div class="ex-equip">Cable / Machine</div>
+            <div class="ex-sets">3 × 12–15 <span class="chevron">▾</span></div>
+          </div>
+          <div class="exercise-body">
+            <div class="ex-row">
+              <div><div class="ex-detail-label">Technique</div><div class="ex-detail-val">Cables at chest height, slight forward lean. Squeeze hands together and past the midline. 3-sec eccentric. Constant tension — don't let cables go slack at any point in the rep.</div></div>
+              <div><div class="ex-detail-label">Why include</div><div class="ex-detail-val">Pressing movements never fully adduct the humerus. The inner chest "shelf" is built at peak adduction — a position that flat pressing simply cannot achieve. This fills that gap.</div></div>
+            </div>
+            <div class="stretch-note"><strong>🎯 Feel it here</strong>Outer pec stretch at full extension. Inner chest squeeze at the crossover point — hands should pass each other slightly for full adduction.</div>
+            <div class="fail-detail"><strong>⚡ Failure guidance</strong>All 3 sets can go to clean technical failure. No bar overhead — safe to push. Stop when you can no longer complete full adduction, not when arms simply slow down.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SHOULDERS -->
+    <div class="muscle-group">
+      <div class="muscle-label">Shoulders — anterior &amp; lateral deltoid</div>
+      <div class="exercise-list">
+
+        <div class="exercise" onclick="toggle(this)">
+          <div class="exercise-header">
+            <div class="ex-name">Seated Dumbbell Shoulder Press</div>
+            <div class="fail-badge rpe">RPE 8–9</div>
+            <div class="ex-equip">Dumbbells</div>
+            <div class="ex-sets">3 × 8–10 <span class="chevron">▾</span></div>
+          </div>
+          <div class="exercise-body">
+            <div class="ex-row">
+              <div><div class="ex-detail-label">Technique</div><div class="ex-detail-val">Back supported. Dumbbells at ear height. Press overhead without excessive lumbar arch. Stop just short of lockout to keep tension. Keep ribs down throughout.</div></div>
+              <div><div class="ex-detail-label">Common fault</div><div class="ex-detail-val">Excessive backward lean converts this into an upper chest press. Torso must stay upright — if you're arching deeply, reduce the load.</div></div>
+            </div>
+            <div class="stretch-note"><strong>🎯 Feel it here</strong>Anterior deltoid (front of shoulder cap) on the press. Peak contraction just before lockout, not at it.</div>
+            <div class="fail-detail"><strong>⚡ Failure guidance</strong>Leave 1–2 reps in reserve on all sets. Shoulder pressing to failure risks the dumbbells falling to ear height uncontrolled — a rotator cuff impingement mechanism.</div>
+            <div class="warn-note"><strong>⚠ Warning</strong>Pinching in the front shoulder at the top means your elbows are too far forward. Move them slightly back so they're directly under the dumbbell at the start position.</div>
+          </div>
+        </div>
+
+        <div class="exercise" onclick="toggle(this)">
+          <div class="exercise-header">
+            <div class="ex-name">Cable Lateral Raise</div>
+            <div class="fail-badge to-fail">To Failure</div>
+            <div class="ex-equip">Cable</div>
+            <div class="ex-sets">3 × 12–15 <span class="chevron">▾</span></div>
+          </div>
+          <div class="exercise-body">
+            <div class="ex-row">
+              <div><div class="ex-detail-label">Technique</div><div class="ex-detail-val">Single-arm from low pulley. Slight elbow bend. Lead with the elbow, not the wrist. Raise to shoulder height. 3-sec eccentric. The cable provides resistance at the bottom — unlike a dumbbell which has near-zero load there.</div></div>
+              <div><div class="ex-detail-label">Why cable over dumbbell</div><div class="ex-detail-val">Dumbbell lateral raises have almost no resistance in the bottom 30° of the movement. Cable maintains constant tension throughout — more stimulus per rep for the medial delt, which creates shoulder width.</div></div>
+            </div>
+            <div class="stretch-note"><strong>🎯 Feel it here</strong>Medial (side) deltoid — the muscle responsible for shoulder width. Stretch at the lowest point, peak at shoulder height.</div>
+            <div class="fail-detail"><strong>⚡ Failure guidance</strong>All sets to failure. Single-arm cable, light load, controlled position — safe to push. Failure = unable to raise elbow to shoulder height without shrugging. That shrug is your stop signal.</div>
+            <div class="warn-note"><strong>⚠ Warning</strong>Shrugging the trap to complete the rep builds traps, not delts. If you're shrugging, reduce load by 20% and learn the movement before progressing.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TRICEPS -->
+    <div class="muscle-group">
+      <div class="muscle-label">Triceps</div>
+      <div class="exercise-list">
+
+        <div class="exercise" onclick="toggle(this)">
+          <div class="exercise-header">
+            <div class="ex-name">Overhead Tricep Extension</div>
+            <div class="fail-badge rpe">RPE 8–9</div>
+            <div class="ex-equip">EZ-Bar / Dumbbell</div>
+            <div class="ex-sets">3 × 10–12 <span class="chevron">▾</span></div>
+          </div>
+          <div class="exercise-body">
+            <div class="ex-row">
+              <div><div class="ex-detail-label">Technique</div><div class="ex-detail-val">Arms overhead, elbows pointing straight forward. Lower behind head, then extend. Only forearms move — upper arms are stationary. The overhead position fully stretches the tricep long head, making this categorically different from pushdowns.</div></div>
+              <div><div class="ex-detail-label">Why overhead</div><div class="ex-detail-val">The tricep long head crosses the shoulder joint, meaning it only reaches a full stretch in the overhead position. It's the largest head and gives the arm its mass from behind. No pushdown variation achieves this.</div></div>
+            </div>
+            <div class="stretch-note"><strong>🎯 Feel it here</strong>Deep stretch in the back of the arm and into the armpit (long head insertion) at the bottom. If you feel nothing — you're not going low enough or your elbows are flaring outward.</div>
+            <div class="fail-detail"><strong>⚡ Failure guidance</strong>Leave 1–2 reps in reserve. Failing overhead with an EZ-bar risks dropping it behind the head. Last set can push to RPE 9 using a single dumbbell held with both hands — safer to control to failure.</div>
+            <div class="warn-note"><strong>⚠ Warning</strong>Flaring elbows wide moves stress from the long head to the elbow joint capsule. Elbows point straight forward — not to the sides — for the entire movement. If they flare, reduce load.</div>
+          </div>
+        </div>
+
+        <div class="exercise" onclick="toggle(this)">
+          <div class="exercise-header">
+            <div class="ex-name">Tricep Rope Pushdown</div>
+            <div class="fail-badge to-fail">To Failure</div>
+            <div class="ex-equip">Cable — Rope</div>
+            <div class="ex-sets">3 × 12–15 <span class="chevron">▾</span></div>
+          </div>
+          <div class="exercise-body">
+            <div class="ex-row">
+              <div><div class="ex-detail-label">Technique</div><div class="ex-detail-val">Elbows pinned to sides throughout. At full lockout, separate the rope ends and rotate thumbs downward — this fully contracts all three heads. Controlled return; elbows must not drift upward as weight returns.</div></div>
+              <div><div class="ex-detail-label">Rope vs Bar</div><div class="ex-detail-val">The rope allows wrist pronation at lockout, recruiting more lateral and medial head fibres simultaneously. A bar keeps wrists neutral and limits this final cue. Rope is the superior choice here.</div></div>
+            </div>
+            <div class="stretch-note"><strong>🎯 Feel it here</strong>The horseshoe shape on the outer (lateral) tricep head at full lockout — the part visible when the arm hangs at your side.</div>
+            <div class="fail-detail"><strong>⚡ Failure guidance</strong>All sets to failure. Standing cable, light-to-moderate load — safe to push fully. Stop when elbows drift from your sides or wrists break, not just when arms slow down.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- CORE PUSH -->
+    <div class="muscle-group">
+      <div class="muscle-label">Core — anti-extension (push day finisher)</div>
+      <div class="exercise-list">
+
+        <div class="exercise" onclick="toggle(this)">
+          <div class="exercise-header">
+            <div class="ex-name">Ab Wheel Rollout</div>
+            <div class="fail-badge no-fail">Quality Reps</div>
+            <div class="ex-equip">Ab Wheel / Barbell</div>
+            <div class="ex-sets">3 × 8–12 <span class="chevron">▾</span></div>
+          </div>
+          <div class="exercise-body">
+            <div class="ex-row">
+              <div><div class="ex-detail-label">Technique</div><div class="ex-detail-val">Kneel and posteriorly tilt the pelvis (tuck tailbone under) before moving. Brace the entire core hard. Roll out only as far as you maintain a flat lower back. Return by thinking "pull ribs to hips". Start with a short range and add distance week by week.</div></div>
+              <div><div class="ex-detail-label">Why this over crunches</div><div class="ex-detail-val">Anti-extension trains the rectus abdominis in its true function: resisting spinal extension under load. This builds visible, functional abs simultaneously. Crunches work a much smaller ROM under far lighter load — less stimulus per rep.</div></div>
+            </div>
+            <div class="stretch-note"><strong>🎯 Feel it here</strong>Deep, sustained tension across the entire anterior core from sternum to pelvis. Not a burn — more like a vice grip across the whole abdominal wall.</div>
+            <div class="fail-detail"><strong>⚡ Failure guidance</strong>Never to failure. Stop the moment the lower back dips. One rep with lumbar extension under this lever arm loads the spine dangerously. Shorten your range before you lose position — always.</div>
+            <div class="warn-note"><strong>⚠ Warning</strong>If you feel this in your lower back rather than your abs — stop immediately. Reduce to a 20–30 cm rollout and rebuild from there. This exercise done wrong trains the erectors, not the abs.</div>
+          </div>
+        </div>
+
+        <div class="exercise" onclick="toggle(this)">
+          <div class="exercise-header">
+            <div class="ex-name">Weighted Plank</div>
+            <div class="fail-badge no-fail">Quality Reps</div>
+            <div class="ex-equip">Bodyweight → Plate</div>
+            <div class="ex-sets">3 × 30–60 sec <span class="chevron">▾</span></div>
+          </div>
+          <div class="exercise-body">
+            <div class="ex-row">
+              <div><div class="ex-detail-label">Technique</div><div class="ex-detail-val">Forearms flat, elbows under shoulders. Posterior pelvic tilt. Squeeze glutes and quads in addition to abs — this is a full-body tension hold. Breathe through the brace; don't hold your breath. Once 60 sec is easy, add a 5 kg plate on the lower back.</div></div>
+              <div><div class="ex-detail-label">Progressive overload</div><div class="ex-detail-val">Add 5 seconds per session until 60 sec is achieved. Then add a 5 kg plate and reset to 30 sec. Track duration and load — this is real progressive overload, not just "holding it".</div></div>
+            </div>
+            <div class="stretch-note"><strong>🎯 Feel it here</strong>Deep bracing tension across the full abdominal wall. If you feel nothing — squeeze harder. The cue: "brace as if you're about to take a punch." That's the correct intensity.</div>
+            <div class="fail-detail"><strong>⚡ Failure guidance</strong>Stop when hips drop or lower back arches — position failure is the only signal. Discomfort from the hold is fine and expected. Structural breakdown is the stop signal.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div><!-- /push -->
+
+  <div class="divider"></div>
+
+  <!-- ═══ PULL DAY ═══ -->
+  <div class="workout-section">
+    <div class="workout-header">
+      <div class="workout-title pull">PULL DAY</div>
+      <div class="time-pills">
+        <span class="time-pill warmup-pill">▸ Warmup ~10 min</span>
+        <span class="time-pill workout-pill">Workout ~55 min</span>
+        <span class="time-pill total-pill">Total ~65 min</span>
+      </div>
+    </div>
+    <div class="workout-subtitle">Back (lats · rhomboids · traps) · Biceps · Rear Delt · Core (rotation)</div>
+    <p class="workout-intro">
+      Pull day is your back width and thickness session. Lead with a vertical pull for lat width, then a horizontal pull for mid-back depth. Rear delts come before biceps — they're critical for shoulder health and the 3D shoulder cap look, and fatigue faster. Biceps come last: they've already been working as secondary movers on every row and pull. Core finisher uses rotation and flexion — the oblique-focused patterns that carve the sides of a six-pack. Rest 2–3 min on compounds, 60–90 sec on isolation.
+    </p>
+
+    <!-- PULL WARMUP -->
+    <div class="warmup-block" id="wu-pull">
+      <div class="warmup-toggle" onclick="toggleWarmup('wu-pull')">
+        <div class="warmup-toggle-left">
+          <span class="warmup-icon">🔥</span>
+          <div>
+            <div class="warmup-toggle-label">Warmup — Pull Day</div>
+            <div class="warmup-toggle-sub">5 exercises · ~10 min · activate the back before loading it</div>
+          </div>
+        </div>
+        <span class="warmup-chevron">▾</span>
+      </div>
+      <div class="warmup-body">
+        <div class="warmup-note">
+          Pull day warmup focuses on scapular mobility, lat activation, and elbow/bicep tendon preparation. Most back injuries occur when pulling under load before the rotator cuff and scapular stabilisers are primed. These 10 minutes directly prevent the most common pulling injuries: bicep tendon strain and shoulder impingement.
+        </div>
+        <div class="warmup-header-row">
+          <span class="warmup-h">Exercise</span>
+          <span class="warmup-h warmup-h-sets2">Sets / Reps</span>
+          <span class="warmup-h warmup-h-time2">Est. Time</span>
+          <span class="warmup-h">Purpose</span>
+        </div>
+        <div class="warmup-exercise">
+          <div><div class="warmup-ex-name">Thoracic Rotation Stretch</div><div class="warmup-ex-detail">Seated or kneeling — rotate upper back left and right, reach arm overhead at end range</div></div>
+          <div class="warmup-ex-sets">2 × 10/side</div>
+          <div class="warmup-ex-time">~2 min</div>
+          <div class="warmup-ex-purpose">Opens the thoracic spine for full scapular retraction during rows. A stiff T-spine forces the lower back to compensate under pulling loads.</div>
+        </div>
+        <div class="warmup-exercise">
+          <div><div class="warmup-ex-name">Dead Hang</div><div class="warmup-ex-detail">Full grip on pull-up bar — hang completely, let shoulders decompress naturally</div></div>
+          <div class="warmup-ex-sets">2 × 30 sec</div>
+          <div class="warmup-ex-time">~2 min</div>
+          <div class="warmup-ex-purpose">Decompresses the shoulder joint, stretches the lat at full length, and activates grip. Also establishes the pull-up starting position before load is added.</div>
+        </div>
+        <div class="warmup-exercise">
+          <div><div class="warmup-ex-name">Scapular Pull-Up</div><div class="warmup-ex-detail">Hang from bar, depress and retract shoulder blades only — no elbow bend. 1-sec hold at top.</div></div>
+          <div class="warmup-ex-sets">2 × 10</div>
+          <div class="warmup-ex-time">~2 min</div>
+          <div class="warmup-ex-purpose">Fires lower trapezius and serratus before adding elbow flexion. The most important lat activation drill — without it, pull-ups are felt in the biceps instead of the back.</div>
+        </div>
+        <div class="warmup-exercise">
+          <div><div class="warmup-ex-name">Band Face Pull</div><div class="warmup-ex-detail">Light band at eye height — pull to forehead, elbows high, externally rotate at end position</div></div>
+          <div class="warmup-ex-sets">2 × 15</div>
+          <div class="warmup-ex-time">~2 min</div>
+          <div class="warmup-ex-purpose">Primes rear deltoid and external rotators before heavy pulling. Protects the shoulder from internal rotation dominance under rowing loads.</div>
+        </div>
+        <div class="warmup-exercise">
+          <div><div class="warmup-ex-name">Light Lat Pulldown or Assisted Pull-Up</div><div class="warmup-ex-detail">~40% of working weight — slow, full ROM, focus on feeling the lat, not the bicep</div></div>
+          <div class="warmup-ex-sets">2 × 12</div>
+          <div class="warmup-ex-time">~2 min</div>
+          <div class="warmup-ex-purpose">Final movement-specific prep. Establishes the lat mind-muscle connection before loading. Essential for lifters who still default to bicep-dominant pulling.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LATS -->
+    <div class="muscle-group">
+      <div class="muscle-label">Lats — back width</div>
+      <div class="exercise-list">
+
+        <div class="exercise" onclick="toggle(this)">
+          <div class="exercise-header">
+            <div class="ex-name">Pull-Up / Weighted Pull-Up</div>
+            <div class="fail-badge rpe">RPE 8–9</div>
+            <div class="ex-equip">Bodyweight / Belt</div>
+            <div class="ex-sets">4 × 5–8 <span class="chevron">▾</span></div>
+          </div>
+          <div class="exercise-body">
+            <div class="ex-row">
+              <div><div class="ex-detail-label">Technique</div><div class="ex-detail-val">Start from a dead hang. Depress scapulae first ("shrug downward" before bending the elbows). Pull elbows toward the hips — not the ears. Lead with the chest to the bar. 3-sec controlled descent. No kipping.</div></div>
+              <div><div class="ex-detail-label">Progression</div><div class="ex-detail-val">Can't hit 5 reps? Use lat pulldown until strength builds. Hitting 8+ easily? Add load via a dip belt. The weighted pull-up is one of the best progressive overload vehicles in existence.</div></div>
+            </div>
+            <div class="stretch-note"><strong>🎯 Feel it here</strong>Deep lat stretch under the armpit at dead hang. Contraction along the entire back from armpit to lower back at the top. If you only feel biceps — the scapular depression cue is missing.</div>
+            <div class="fail-detail"><strong>⚡ Failure guidance</strong>Leave 1–2 reps in reserve. Failing a pull-up means uncontrolled drop from height — bicep tendon or shoulder strain risk. Stop when chin no longer clears the bar with controlled form.</div>
+            <div class="warn-note"><strong>⚠ Warning</strong>Never skip the dead hang start. Partial hangs (slight elbow bend at bottom) reduce lat recruitment and chronically stress the bicep tendon insertion at the elbow over time.</div>
+          </div>
+        </div>
+
+        <div class="exercise" onclick="toggle(this)">
+          <div class="exercise-header">
+            <div class="ex-name">Cable Straight-Arm Pulldown</div>
+            <div class="fail-badge to-fail">To Failure</div>
+            <div class="ex-equip">Cable</div>
+            <div class="ex-sets">3 × 12–15 <span class="chevron">▾</span></div>
+          </div>
+          <div class="exercise-body">
+            <div class="ex-row">
+              <div><div class="ex-detail-label">Technique</div><div class="ex-detail-val">Arms straight throughout — zero elbow bend. Slight hip hinge. Pull bar from overhead to thighs in an arc by driving elbows down and through. Pure lat isolation with no bicep contribution.</div></div>
+              <div><div class="ex-detail-label">Why include</div><div class="ex-detail-val">Most people unconsciously recruit their biceps in lat movements. Straight-arm work eliminates bicep contribution entirely and builds the mind-muscle connection needed to get more from every compound pulling movement.</div></div>
+            </div>
+            <div class="stretch-note"><strong>🎯 Feel it here</strong>Full lat stretch at the overhead position. Deep contraction along the side of the back at the hip — think "squeeze your armpit shut".</div>
+            <div class="fail-detail"><strong>⚡ Failure guidance</strong>All sets to failure. Standing cable, no bar overhead — safe to push. Stop when elbows begin to bend (bicep compensating), not just when arms slow down.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- MID BACK -->
+    <div class="muscle-group">
+      <div class="muscle-label">Rhomboids / Mid-trap — back thickness</div>
+      <div class="exercise-list">
+
+        <div class="exercise" onclick="toggle(this)">
+          <div class="exercise-header">
+            <div class="ex-name">Barbell Bent-Over Row</div>
+            <div class="fail-badge rpe">RPE 8–9</div>
+            <div class="ex-equip">Barbell</div>
+            <div class="ex-sets">4 × 6–8 <span class="chevron">▾</span></div>
+          </div>
+          <div class="exercise-body">
+            <div class="ex-row">
+              <div><div class="ex-detail-label">Technique</div><div class="ex-detail-val">Hinge until torso is ~45°. Brace core hard before each rep. Pull bar to lower sternum/upper abdomen — not the chin. Fully retract scapulae at the top. No jerking or momentum. Overhand or underhand grip both valid — alternate between training blocks.</div></div>
+              <div><div class="ex-detail-label">Grip comparison</div><div class="ex-detail-val">Overhand (pronated): more upper back, rear delt, rhomboid. Underhand (supinated): more lat and bicep. Alternate between mesocycles to develop the full back and prevent pattern overuse.</div></div>
+            </div>
+            <div class="stretch-note"><strong>🎯 Feel it here</strong>Stretch between the shoulder blades at full arm extension. Mid-upper back squeeze at the top — if you only feel arms pulling, you're not retracting the scapulae.</div>
+            <div class="fail-detail"><strong>⚡ Failure guidance</strong>Leave 1–2 reps in reserve always. Failure in a bent-over position under heavy load causes lumbar rounding — the primary mechanism for disc injury on this exercise. Stop when bar speed drops significantly or your lower back brace wavers.</div>
+            <div class="warn-note"><strong>⚠ Warning</strong>Lower back rounding to handle heavier load is the most common dangerous fault here. The muscles being targeted are in the upper back — load that your lower back can't support isn't training your target muscles, it's just risk.</div>
+          </div>
+        </div>
+
+        <div class="exercise" onclick="toggle(this)">
+          <div class="exercise-header">
+            <div class="ex-name">Single-Arm Dumbbell Row</div>
+            <div class="fail-badge rpe">RPE 8–9</div>
+            <div class="ex-equip">Dumbbell</div>
+            <div class="ex-sets">3 × 10–12 each side <span class="chevron">▾</span></div>
+          </div>
+          <div class="exercise-body">
+            <div class="ex-row">
+              <div><div class="ex-detail-label">Technique</div><div class="ex-detail-val">Support hand and knee on bench. Let the working arm hang fully — allow the shoulder to fully protract at the bottom. Retract the scapula first, then bend the elbow. Pull to the hip, not the armpit. The shoulder blade should visibly travel from protracted to retracted.</div></div>
+              <div><div class="ex-detail-label">ROM tip</div><div class="ex-detail-val">Most people never allow full shoulder protraction at the bottom, cutting the ROM in half. That lost half contains the entire stretch phase — the phase most responsible for hypertrophic stimulus. Let the shoulder reach forward every rep.</div></div>
+            </div>
+            <div class="stretch-note"><strong>🎯 Feel it here</strong>Lat and mid-back stretch at the full hang. Scapular retraction and mid-back squeeze at the top — not just a bicep curl.</div>
+            <div class="fail-detail"><strong>⚡ Failure guidance</strong>Leave 1 rep in reserve. Failure on a dumbbell row typically results in torso rotation to compensate — this shifts load to the lower back rather than the target muscles.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- REAR DELT -->
+    <div class="muscle-group">
+      <div class="muscle-label">Rear Deltoid — shoulder health &amp; aesthetics</div>
+      <div class="exercise-list">
+
+        <div class="exercise" onclick="toggle(this)">
+          <div class="exercise-header">
+            <div class="ex-name">Face Pull</div>
+            <div class="fail-badge to-fail">To Failure</div>
+            <div class="ex-equip">Cable — Rope</div>
+            <div class="ex-sets">3 × 15–20 <span class="chevron">▾</span></div>
+          </div>
+          <div class="exercise-body">
+            <div class="ex-row">
+              <div><div class="ex-detail-label">Technique</div><div class="ex-detail-val">Rope at eye/forehead height. Pull to the face with elbows flaring above shoulder height. At end position, externally rotate so hands finish pointing upward (like a double bicep pose). Hold 1 sec. Two phases: pull and rotate. Most people only do the pull.</div></div>
+              <div><div class="ex-detail-label">Why this matters</div><div class="ex-detail-val">Push days heavily bias internal rotation and the anterior delt. Without external rotation work, the shoulder capsule tightens anteriorly over months — leading to impingement. Face pulls are one of the most important shoulder health exercises that most people consistently skip.</div></div>
+            </div>
+            <div class="stretch-note"><strong>🎯 Feel it here</strong>Posterior deltoid (back of the shoulder cap) and external rotators. Hard to isolate initially — focus on the "show your armpits" external rotation cue at peak contraction.</div>
+            <div class="fail-detail"><strong>⚡ Failure guidance</strong>All sets to failure. Light load, safe position. Stop when you can no longer achieve full external rotation at the end position (hands pointing up). That's technical failure.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- BICEPS -->
+    <div class="muscle-group">
+      <div class="muscle-label">Biceps</div>
+      <div class="exercise-list">
+
+        <div class="exercise" onclick="toggle(this)">
+          <div class="exercise-header">
+            <div class="ex-name">EZ-Bar Bicep Curl</div>
+            <div class="fail-badge rpe">RPE 8–9</div>
+            <div class="ex-equip">EZ-Bar</div>
+            <div class="ex-sets">3 × 8–10 <span class="chevron">▾</span></div>
+          </div>
+          <div class="exercise-body">
+            <div class="ex-row">
+              <div><div class="ex-detail-label">Technique</div><div class="ex-detail-val">Full hang at the bottom — never cut the ROM short. Curl to chin without body swing. On the eccentric, fully supinate the wrist as you lower — this recruits more bicep fibres through the complete range.</div></div>
+              <div><div class="ex-detail-label">EZ-Bar vs Straight Bar</div><div class="ex-detail-val">Straight bar forces more supination = more long head recruitment (outer peak). EZ-bar is easier on the wrists and still highly effective. Alternate between blocks.</div></div>
+            </div>
+            <div class="stretch-note"><strong>🎯 Feel it here</strong>Long head (outer bicep) stretch at the bottom. If you allow a slight shoulder extension at the bottom (elbow slightly behind the hip), the long head stretch is even more pronounced.</div>
+            <div class="fail-detail"><strong>⚡ Failure guidance</strong>Leave 1 rep in reserve. Bicep failure often triggers a momentum jerk to complete the rep — this is a bicep tendon injury mechanism at the elbow. Stop before you swing.</div>
+          </div>
+        </div>
+
+        <div class="exercise" onclick="toggle(this)">
+          <div class="exercise-header">
+            <div class="ex-name">Incline Dumbbell Curl</div>
+            <div class="fail-badge to-fail">To Failure</div>
+            <div class="ex-equip">Dumbbells</div>
+            <div class="ex-sets">3 × 10–12 <span class="chevron">▾</span></div>
+          </div>
+          <div class="exercise-body">
+            <div class="ex-row">
+              <div><div class="ex-detail-label">Technique</div><div class="ex-detail-val">Bench at 45–60°. Arms hang behind the body at the bottom — this pre-stretches the long head before each rep. Curl without bringing the elbow forward. The position makes cheating structurally impossible and forces honest ROM.</div></div>
+              <div><div class="ex-detail-label">Why include</div><div class="ex-detail-val">The bicep long head (peak) is maximally stressed when the arm is behind the torso — a position standing curls cannot achieve. Use lighter weight than expected. This is your peak builder.</div></div>
+            </div>
+            <div class="stretch-note"><strong>🎯 Feel it here</strong>Deep long head stretch at the bottom — in the front of the upper arm/front of shoulder. If you feel nothing at the bottom, the bench is too upright or you're not allowing the arm to hang fully behind you.</div>
+            <div class="fail-detail"><strong>⚡ Failure guidance</strong>All sets to failure. The inclined position eliminates cheating — when you genuinely fail, the dumbbell simply won't move without the elbow coming forward, which is a clear and safe natural stopping signal.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- CORE PULL -->
+    <div class="muscle-group">
+      <div class="muscle-label">Core — flexion &amp; rotation (pull day finisher)</div>
+      <div class="exercise-list">
+
+        <div class="exercise" onclick="toggle(this)">
+          <div class="exercise-header">
+            <div class="ex-name">Hanging Knee / Leg Raise</div>
+            <div class="fail-badge no-fail">Quality Reps</div>
+            <div class="ex-equip">Pull-Up Bar</div>
+            <div class="ex-sets">3 × 10–15 <span class="chevron">▾</span></div>
+          </div>
+          <div class="exercise-body">
+            <div class="ex-row">
+              <div><div class="ex-detail-label">Technique</div><div class="ex-detail-val">Hang from bar. Posteriorly tilt pelvis (tuck tailbone) before lifting anything. Raise knees to chest or straight legs to 90°+. Lower in a controlled 3-sec eccentric. No swinging. The lowering phase carries most of the stimulus.</div></div>
+              <div><div class="ex-detail-label">Progression</div><div class="ex-detail-val">Bent knee → straight leg raise → toes-to-bar. Advance when you can do 15 clean, slow reps. Never advance by adding momentum — that's not progression, it's just hip flexors.</div></div>
+            </div>
+            <div class="stretch-note"><strong>🎯 Feel it here</strong>Lower abdominals at the bottom of the eccentric. Rectus abdominis peak at the top when the pelvis posteriorly tilts and the lower back rounds slightly as knees reach the chest.</div>
+            <div class="fail-detail"><strong>⚡ Failure guidance</strong>Stop when you can no longer control the eccentric or when hips begin to swing. Momentum means hip flexors are doing the work — not the abs. Quality reps only.</div>
+            <div class="warn-note"><strong>⚠ Warning</strong>Hip flexor dominance is the most common fault. If you feel it entirely in the hip crease — the posterior pelvic tilt is missing. Tuck the tailbone before every rep, every time.</div>
+          </div>
+        </div>
+
+        <div class="exercise" onclick="toggle(this)">
+          <div class="exercise-header">
+            <div class="ex-name">Pallof Press</div>
+            <div class="fail-badge no-fail">Quality Reps</div>
+            <div class="ex-equip">Cable</div>
+            <div class="ex-sets">3 × 12 each side <span class="chevron">▾</span></div>
+          </div>
+          <div class="exercise-body">
+            <div class="ex-row">
+              <div><div class="ex-detail-label">Technique</div><div class="ex-detail-val">Stand sideways to cable, cable at chest height. Hold with both hands at your sternum. Press arms straight out in front — hold 2 sec — return. The cable pulls you to rotate toward it. Your entire job is to resist that rotation completely. Hips and shoulders stay perfectly square forward.</div></div>
+              <div><div class="ex-detail-label">Why anti-rotation</div><div class="ex-detail-val">Obliques don't just create rotation — their primary function is to resist and control it. This is what creates the carved side definition of a six-pack. Crunches don't train obliques in this anti-rotation pattern. Pallof press does.</div></div>
+            </div>
+            <div class="stretch-note"><strong>🎯 Feel it here</strong>External oblique on the side facing away from the cable. Subtle but deep. If you feel nothing — increase load slightly or slow the press to a 3-sec extension.</div>
+            <div class="fail-detail"><strong>⚡ Failure guidance</strong>Stop when hips or shoulders begin to rotate toward the cable. Never to muscular failure — form failure is the only measure that counts here.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div><!-- /pull -->
+
+  <div class="divider"></div>
+
+  <!-- ═══ LEG DAY ═══ -->
+  <div class="workout-section">
+    <div class="workout-header">
+      <div class="workout-title legs">LEG DAY</div>
+      <div class="time-pills">
+        <span class="time-pill warmup-pill">▸ Warmup ~15 min</span>
+        <span class="time-pill workout-pill">Workout ~60 min</span>
+        <span class="time-pill total-pill">Total ~75 min</span>
+      </div>
+    </div>
+    <div class="workout-subtitle">Quads · Hamstrings · Glutes · Calves · Core (lateral)</div>
+    <p class="workout-intro">
+      Leg day is your highest hormonal stimulus session — squats and deadlifts trigger more systemic growth hormone and testosterone release than any other exercise. The warmup here is the longest of the three because the hip, knee, and ankle require substantially more preparation than the shoulder joint. Lead with squat (knee-dominant), follow with RDL (hip-dominant), then isolation. Calves need full ROM and genuine volume — undertrained calves are one of the most common physique bottlenecks. Core finisher: lateral stability.
+    </p>
+
+    <!-- LEGS WARMUP -->
+    <div class="warmup-block" id="wu-legs">
+      <div class="warmup-toggle" onclick="toggleWarmup('wu-legs')">
+        <div class="warmup-toggle-left">
+          <span class="warmup-icon">🔥</span>
+          <div>
+            <div class="warmup-toggle-label">Warmup — Leg Day</div>
+            <div class="warmup-toggle-sub">7 exercises · ~15 min · hips, ankles, and glutes all need separate activation</div>
+          </div>
+        </div>
+        <span class="warmup-chevron">▾</span>
+      </div>
+      <div class="warmup-body">
+        <div class="warmup-note">
+          Leg day warmup is the most critical of the three. Cold hip flexors, restricted ankles, and inactive glutes under a loaded squat is the standard recipe for knee cave, butt wink, and lower back injury. Your squat depth and safety depend directly on the quality of these 15 minutes. Never skip or shorten this warmup on leg day.
+        </div>
+        <div class="warmup-header-row">
+          <span class="warmup-h">Exercise</span>
+          <span class="warmup-h warmup-h-sets2">Sets / Reps</span>
+          <span class="warmup-h warmup-h-time2">Est. Time</span>
+          <span class="warmup-h">Purpose</span>
+        </div>
+        <div class="warmup-exercise">
+          <div><div class="warmup-ex-name">Hip Circle + Leg Swing</div><div class="warmup-ex-detail">Standing — large circles clockwise and counter-clockwise, then front-to-back and lateral swings</div></div>
+          <div class="warmup-ex-sets">2 × 15/dir</div>
+          <div class="warmup-ex-time">~2 min</div>
+          <div class="warmup-ex-purpose">Lubricates the hip joint and increases ROM. Cold hip flexors are the primary cause of lower back rounding (butt wink) in the squat.</div>
+        </div>
+        <div class="warmup-exercise">
+          <div><div class="warmup-ex-name">Ankle Dorsiflexion Stretch</div><div class="warmup-ex-detail">Foot elevated on a step edge — full heel drop and then controlled dorsiflexion push</div></div>
+          <div class="warmup-ex-sets">2 × 15/foot</div>
+          <div class="warmup-ex-time">~2 min</div>
+          <div class="warmup-ex-purpose">Ankle dorsiflexion restriction is the #1 cause of heel rise and excessive forward lean in the squat. This drill alone adds measurable depth within 4–6 weeks if done consistently.</div>
+        </div>
+        <div class="warmup-exercise">
+          <div><div class="warmup-ex-name">Slow Glute Bridge</div><div class="warmup-ex-detail">On the floor — 3 sec up, 2 sec hold at top, 3 sec down. Focus entirely on glute squeeze.</div></div>
+          <div class="warmup-ex-sets">2 × 15</div>
+          <div class="warmup-ex-time">~2 min</div>
+          <div class="warmup-ex-purpose">Activates gluteus maximus before squatting and deadlifting. Inactive glutes shift load to the lower back in every compound leg movement.</div>
+        </div>
+        <div class="warmup-exercise">
+          <div><div class="warmup-ex-name">Bodyweight Squat with Pause</div><div class="warmup-ex-detail">3 sec down, 2 sec hold at the bottom, stand. Heels stay flat, chest stays up.</div></div>
+          <div class="warmup-ex-sets">2 × 10</div>
+          <div class="warmup-ex-time">~2 min</div>
+          <div class="warmup-ex-purpose">Movement pattern rehearsal for the barbell squat. The bottom pause dynamically improves hip and ankle mobility. Identifies tightness before load is applied.</div>
+        </div>
+        <div class="warmup-exercise">
+          <div><div class="warmup-ex-name">Lateral Band Walk</div><div class="warmup-ex-detail">Mini band around knees — slight squat position, step laterally 10 steps each direction</div></div>
+          <div class="warmup-ex-sets">2 × 10/side</div>
+          <div class="warmup-ex-time">~2 min</div>
+          <div class="warmup-ex-purpose">Activates gluteus medius — the abductor that prevents knees from caving inward during squat descent. Without this, knee cave under load is almost certain.</div>
+        </div>
+        <div class="warmup-exercise">
+          <div><div class="warmup-ex-name">Empty Bar Squat</div><div class="warmup-ex-detail">Just the bar — full depth with pause at bottom. Focus on bar position, foot pressure, and depth.</div></div>
+          <div class="warmup-ex-sets">1 × 10</div>
+          <div class="warmup-ex-time">~1.5 min</div>
+          <div class="warmup-ex-purpose">Final movement groove before ramp-up. Confirms depth is accessible today, establishes foot pressure (tripod base), and verifies bar position before any real load goes on.</div>
+        </div>
+        <div class="warmup-exercise">
+          <div><div class="warmup-ex-name">Ramp-Up Sets — Squat</div><div class="warmup-ex-detail">~50% × 5 reps, then ~70% × 3 reps. These should feel easy — neural priming only, not tiring.</div></div>
+          <div class="warmup-ex-sets">2 ramp sets</div>
+          <div class="warmup-ex-time">~3 min</div>
+          <div class="warmup-ex-purpose">Progressively loads the movement before working sets. Identifies any sharp knee or hip discomfort at sub-maximal loads — a clear signal to reduce load today.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUADS -->
+    <div class="muscle-group">
+      <div class="muscle-label">Quads — primary knee extensors</div>
+      <div class="exercise-list">
+
+        <div class="exercise" onclick="toggle(this)">
+          <div class="exercise-header">
+            <div class="ex-name">Barbell Back Squat</div>
+            <div class="fail-badge rpe">RPE 8–9</div>
+            <div class="ex-equip">Barbell</div>
+            <div class="ex-sets">4 × 5–8 <span class="chevron">▾</span></div>
+          </div>
+          <div class="exercise-body">
+            <div class="ex-row">
+              <div><div class="ex-detail-label">Technique</div><div class="ex-detail-val">Bar on upper traps (high bar) or rear delts (low bar). Feet shoulder-width, toes 15–30° out. Brace hard, hold your breath (Valsalva). Break at hip and knee simultaneously. Drive knees out over toes on descent and ascent. Aim for at least parallel.</div></div>
+              <div><div class="ex-detail-label">High bar vs low bar</div><div class="ex-detail-val">High bar: more upright torso, more quad emphasis, allows deeper depth for most people. Low bar: more hip-dominant, mechanically stronger, more hamstring/glute. For aesthetics, high bar is typically preferred.</div></div>
+            </div>
+            <div class="stretch-note"><strong>🎯 Feel it here</strong>Full quad stretch at the bottom. Glute and hamstring tension throughout the range. If you only feel it in the knees — reduce weight and prioritise the ankle/hip warmup drills consistently over the next 4–6 weeks.</div>
+            <div class="fail-detail"><strong>⚡ Failure guidance</strong>Never to failure without a spotter and safety bars set. Leave 2 reps in reserve on all sets. A failed squat without safety equipment is extremely dangerous. Always set the safeties before your first set.</div>
+            <div class="warn-note"><strong>⚠ Warning</strong>"Butt wink" (lower back rounding at depth) is a mobility limitation, not a technique error you can simply fix by trying harder. Reduce depth to where your lower back stays neutral and work on the warmup drills. Never force depth with spinal rounding under a loaded bar.</div>
+          </div>
+        </div>
+
+        <div class="exercise" onclick="toggle(this)">
+          <div class="exercise-header">
+            <div class="ex-name">Leg Press</div>
+            <div class="fail-badge rpe">RPE 8–9</div>
+            <div class="ex-equip">Machine</div>
+            <div class="ex-sets">3 × 10–12 <span class="chevron">▾</span></div>
+          </div>
+          <div class="exercise-body">
+            <div class="ex-row">
+              <div><div class="ex-detail-label">Technique</div><div class="ex-detail-val">Feet mid-platform, shoulder-width. Lower until at least 90° knee angle — deeper if lower back stays flat on the pad. Never lock out knees at the top under load. Lower foot placement = more quad emphasis. Higher = more glute/hamstring.</div></div>
+              <div><div class="ex-detail-label">Why after squats</div><div class="ex-detail-val">Excellent for safe volume accumulation after the CNS-demanding squat. Machine support allows higher loads than free squatting. Track weights precisely — this machine is ideal for progressive overload logging.</div></div>
+            </div>
+            <div class="stretch-note"><strong>🎯 Feel it here</strong>Quad stretch near the knee at the bottom. If the lower back peels from the pad, you've exceeded your current hip mobility — reduce depth.</div>
+            <div class="fail-detail"><strong>⚡ Failure guidance</strong>Last set can push to near-failure. Stop short of full knee lockout at the top regardless of fatigue level — locking out under heavy leg press load stresses the knee capsule.</div>
+            <div class="warn-note"><strong>⚠ Warning</strong>Never fully lock the knees at the top under heavy load. Stop 5–10° short of full extension every rep.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- HAMSTRINGS + GLUTES -->
+    <div class="muscle-group">
+      <div class="muscle-label">Hamstrings &amp; Glutes — posterior chain</div>
+      <div class="exercise-list">
+
+        <div class="exercise" onclick="toggle(this)">
+          <div class="exercise-header">
+            <div class="ex-name">Romanian Deadlift (RDL)</div>
+            <div class="fail-badge rpe">RPE 8–9</div>
+            <div class="ex-equip">Barbell / Dumbbells</div>
+            <div class="ex-sets">3 × 8–10 <span class="chevron">▾</span></div>
+          </div>
+          <div class="exercise-body">
+            <div class="ex-row">
+              <div><div class="ex-detail-label">Technique</div><div class="ex-detail-val">Start standing. Push hips backward — not downward. Keep bar dragging close to the legs. Neutral spine throughout. Lower until the hamstring stretch stops you — typically mid-shin. Drive hips forward to return to standing. Soft knee bend throughout. Bar never touches the floor.</div></div>
+              <div><div class="ex-detail-label">RDL vs Conventional DL</div><div class="ex-detail-val">RDL maintains constant tension — no floor rest. It's stretch-focused, maximising hamstring hypertrophy stimulus. Conventional deadlift is max-strength focused from a dead stop. For aesthetics and posterior chain development, RDL provides the more direct stimulus.</div></div>
+            </div>
+            <div class="stretch-note"><strong>🎯 Feel it here</strong>Strong hamstring pull behind the knee and into the glute at the lowest point. If you feel the lower back instead — you're either overloaded or rounding the spine. This is a hip hinge, not a back movement.</div>
+            <div class="fail-detail"><strong>⚡ Failure guidance</strong>Leave 1–2 reps in reserve always. Lower back rounding under a loaded hip hinge is the classic disc injury mechanism. Form failure is the absolute stop signal regardless of rep count.</div>
+            <div class="warn-note"><strong>⚠ Warning</strong>Your range ends where your hamstring flexibility currently ends — not further. Forcing past that with spinal flexion is how lumbar disc issues accumulate silently over weeks before becoming injuries.</div>
+          </div>
+        </div>
+
+        <div class="exercise" onclick="toggle(this)">
+          <div class="exercise-header">
+            <div class="ex-name">Hip Thrust</div>
+            <div class="fail-badge rpe">RPE 8–9</div>
+            <div class="ex-equip">Barbell / Machine</div>
+            <div class="ex-sets">3 × 10–15 <span class="chevron">▾</span></div>
+          </div>
+          <div class="exercise-body">
+            <div class="ex-row">
+              <div><div class="ex-detail-label">Technique</div><div class="ex-detail-val">Upper back on bench edge, bar across hip crease (use a pad). Feet flat and pushed slightly forward. Drive through heels. At the top: chin tucked, ribs down — no lumbar hyperextension. Squeeze glutes hard for 1 full second at the top every rep.</div></div>
+              <div><div class="ex-detail-label">Why include alongside squats</div><div class="ex-detail-val">Squats and RDLs work the glute most effectively in the stretched position. Hip thrust works the glute at peak contraction (shortened position). Training both positions is required for complete glute development — you cannot get the full glute from squatting alone.</div></div>
+            </div>
+            <div class="stretch-note"><strong>🎯 Feel it here</strong>Glute maximus hard contraction at the top — not the hamstring, not the lower back. If you feel the lower back, your ribs are flaring and you're hyperextending the lumbar instead of extending the hip. Tuck the chin and push the ribs down.</div>
+            <div class="fail-detail"><strong>⚡ Failure guidance</strong>Last 1–2 sets can push to near-failure. Stop when the lower back begins taking over from the glutes — that's the technical failure point regardless of rep count.</div>
+          </div>
+        </div>
+
+        <div class="exercise" onclick="toggle(this)">
+          <div class="exercise-header">
+            <div class="ex-name">Leg Curl (Seated preferred)</div>
+            <div class="fail-badge to-fail">To Failure</div>
+            <div class="ex-equip">Machine</div>
+            <div class="ex-sets">3 × 10–15 <span class="chevron">▾</span></div>
+          </div>
+          <div class="exercise-body">
+            <div class="ex-row">
+              <div><div class="ex-detail-label">Seated vs Lying</div><div class="ex-detail-val">Seated keeps the hip in flexion, placing the hamstring in a longer starting position — the position from which stretch-mediated hypertrophy is maximised. Research consistently favours seated over lying for hamstring growth. Use seated if your gym has it.</div></div>
+              <div><div class="ex-detail-label">Technique</div><div class="ex-detail-val">Full ROM — complete knee extension at the bottom. Full curl at the top. 3-sec eccentric. Don't let hips lift off the pad (lying) or lean forward excessively (seated) to compensate for heavy load.</div></div>
+            </div>
+            <div class="stretch-note"><strong>🎯 Feel it here</strong>Hamstring stretch at full knee extension. Biceps femoris (outer/lower hamstring) most prominent. Full hamstring contraction at peak curl.</div>
+            <div class="fail-detail"><strong>⚡ Failure guidance</strong>All sets to failure. Machine isolation, fixed axis — safe to push. Stop when hips lift (lying) or you lose control of the eccentric.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- CALVES -->
+    <div class="muscle-group">
+      <div class="muscle-label">Calves — most consistently undertrained muscle group</div>
+      <div class="exercise-list">
+
+        <div class="exercise" onclick="toggle(this)">
+          <div class="exercise-header">
+            <div class="ex-name">Standing Calf Raise</div>
+            <div class="fail-badge to-fail">To Failure</div>
+            <div class="ex-equip">Machine / Dumbbell</div>
+            <div class="ex-sets">4 × 12–20 <span class="chevron">▾</span></div>
+          </div>
+          <div class="exercise-body">
+            <div class="ex-row">
+              <div><div class="ex-detail-label">Technique</div><div class="ex-detail-val">Heel fully below platform level at bottom. Rise to full plantarflexion at top. 2-sec hold at the top. 3-sec eccentric. Calves are fatigue-resistant by design — they walk with you every day. They need full ROM, volume, and progressive overload to respond to training.</div></div>
+              <div><div class="ex-detail-label">Most common error</div><div class="ex-detail-val">Partial reps — bouncing at the bottom and never reaching full heel drop. This trains the calf in its mid-range only. The stretch at full heel drop is the most hypertrophically valuable part of the movement. If it doesn't pull behind your ankle — you're not going low enough.</div></div>
+            </div>
+            <div class="stretch-note"><strong>🎯 Feel it here</strong>Gastrocnemius (upper calf belly) and Achilles tendon at full heel drop. Think of "pushing the floor away with your heel" at the top to maximise the peak contraction.</div>
+            <div class="fail-detail"><strong>⚡ Failure guidance</strong>All sets to failure. Calves are highly fatigue-resistant and safe to push. Stop when you can no longer achieve the full heel-to-peak ROM — not just when it burns.</div>
+          </div>
+        </div>
+
+        <div class="exercise" onclick="toggle(this)">
+          <div class="exercise-header">
+            <div class="ex-name">Seated Calf Raise</div>
+            <div class="fail-badge to-fail">To Failure</div>
+            <div class="ex-equip">Machine / Dumbbell on knee</div>
+            <div class="ex-sets">3 × 15–20 <span class="chevron">▾</span></div>
+          </div>
+          <div class="exercise-body">
+            <div class="ex-row">
+              <div><div class="ex-detail-label">Why both</div><div class="ex-detail-val">Standing targets the gastrocnemius (knee straight). Seated targets the soleus (knee bent slackens the gastrocnemius, forcing the soleus to work). The soleus is a large, deep muscle most people never directly train — it adds real calf depth and thickness that the gastrocnemius alone cannot provide.</div></div>
+              <div><div class="ex-detail-label">Technique</div><div class="ex-detail-val">Same full ROM as standing — heel fully dropped, full rise. Soleus responds well to slow tempo and moderate-high reps. Don't rush this exercise; the soleus is a slow-twitch dominant muscle.</div></div>
+            </div>
+            <div class="stretch-note"><strong>🎯 Feel it here</strong>Deeper, lower calf below the gastrocnemius belly. Genuinely feels like a different muscle — because it largely is.</div>
+            <div class="fail-detail"><strong>⚡ Failure guidance</strong>All sets to failure. Same principle as standing — ROM collapse is the signal, not just burning.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- CORE LEGS -->
+    <div class="muscle-group">
+      <div class="muscle-label">Core — lateral stability (leg day finisher)</div>
+      <div class="exercise-list">
+
+        <div class="exercise" onclick="toggle(this)">
+          <div class="exercise-header">
+            <div class="ex-name">Side Plank (weighted progression)</div>
+            <div class="fail-badge no-fail">Quality Reps</div>
+            <div class="ex-equip">Bodyweight → Plate</div>
+            <div class="ex-sets">3 × 30–45 sec each side <span class="chevron">▾</span></div>
+          </div>
+          <div class="exercise-body">
+            <div class="ex-row">
+              <div><div class="ex-detail-label">Technique</div><div class="ex-detail-val">Elbow directly under shoulder. Stack feet or stagger. Drive hip up — higher than feels natural. Hold. Progress to hip dip variation or add a plate on the hip once 45 sec is comfortable.</div></div>
+              <div><div class="ex-detail-label">Why lateral work</div><div class="ex-detail-val">Squats and deadlifts tax the spine in the sagittal plane only. Lateral core work (obliques, quadratus lumborum) protects the spine against lateral loads and builds the narrow-waist, segmented look that makes abs visible from the front.</div></div>
+            </div>
+            <div class="stretch-note"><strong>🎯 Feel it here</strong>External oblique on the top side. QL (deep lower back) on the bottom side. If you feel neither — drive the hip higher and squeeze harder.</div>
+            <div class="fail-detail"><strong>⚡ Failure guidance</strong>Stop when the hip sags toward the floor. Position-based failure, not time-based.</div>
+          </div>
+        </div>
+
+        <div class="exercise" onclick="toggle(this)">
+          <div class="exercise-header">
+            <div class="ex-name">Dead Bug</div>
+            <div class="fail-badge no-fail">Quality Reps</div>
+            <div class="ex-equip">Bodyweight / Kettlebell</div>
+            <div class="ex-sets">3 × 10 each side <span class="chevron">▾</span></div>
+          </div>
+          <div class="exercise-body">
+            <div class="ex-row">
+              <div><div class="ex-detail-label">Technique</div><div class="ex-detail-val">Lie on back. Press lower back into the floor — keep it there throughout. Arms up, knees 90°. Slowly lower opposite arm and leg while preventing the lower back from lifting. Exhale fully throughout each rep. Full reset between reps.</div></div>
+              <div><div class="ex-detail-label">Why post leg-day</div><div class="ex-detail-val">After heavy compound leg work, dead bug resets spinal stability in a deloaded position. It trains anti-extension with limb loading — the same pattern as the ab wheel but controlled and from the floor. You're getting more from this than it appears.</div></div>
+            </div>
+            <div class="stretch-note"><strong>🎯 Feel it here</strong>Deep transverse abdominis across the lower abdominal wall. Subtle but genuine. If the back lifts from the floor — that rep doesn't count. Reset.</div>
+            <div class="fail-detail"><strong>⚡ Failure guidance</strong>One rep with the lower back lifting is worse than stopping two reps short. Stop at the first sign of back lift — not at muscular exhaustion.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div><!-- /legs -->
+
+  <div class="divider"></div>
+
+  <!-- REST DAYS -->
+  <div class="workout-section">
+    <div class="workout-header">
+      <div class="workout-title rest-title">REST DAYS</div>
+    </div>
+    <div class="workout-subtitle">Active Recovery · Zone 2 · Mobility</div>
+    <p class="workout-intro">
+      Rest days are where adaptation happens — your body repairs and grows during recovery, not during the session itself. The question is never "should I do something?" but "what supports recovery without adding stress?"
+    </p>
+    <div class="rest-grid">
+      <div class="rest-card">
+        <h4>Zone 2 Cardio (20–40 min)</h4>
+        <ul>
+          <li>Walking, cycling, or light rowing — conversational pace throughout, never breathless</li>
+          <li>Enhances mitochondrial density and nutrient delivery to recovering muscle tissue</li>
+          <li>Does not interfere with hypertrophy at this duration and intensity level</li>
+          <li>Maximum 2 sessions/week. HIIT on rest days delays muscle recovery, not accelerates it</li>
+          <li>Morning or evening — both work equally well for recovery purposes</li>
+        </ul>
+      </div>
+      <div class="rest-card">
+        <h4>Mobility / Yoga (20–30 min)</h4>
+        <ul>
+          <li>Target: hip flexors, thoracic spine, and ankles — all directly limit compound lift ROM</li>
+          <li>Couch stretch (60 sec/side): releases hip flexors shortened by sitting and squatting</li>
+          <li>Cat-cow + thoracic rotation: reverses spinal rounding accumulated from pulling</li>
+          <li>Ankle dorsiflexion drill: the single most impactful squat depth improver available</li>
+          <li>Yin yoga (held 3–5 min): targets connective tissue and fascia — different from vinyasa</li>
+        </ul>
+      </div>
+      <div class="rest-card">
+        <h4>What to Avoid</h4>
+        <ul>
+          <li>HIIT or high-intensity cardio — adds fatigue without contributing to hypertrophy</li>
+          <li>Training the same muscle group worked in the preceding 24 hours</li>
+          <li>Sustained running above 40 min at high intensity — elevated cortisol suppresses recovery</li>
+          <li>Complete inactivity: a 20-min walk actively flushes lactate better than lying still</li>
+        </ul>
+      </div>
+      <div class="rest-card">
+        <h4>The Six-Pack Answer</h4>
+        <ul>
+          <li>Abs are built through the core finishers embedded in every session</li>
+          <li>Abs are revealed by reducing body fat — diet is the only variable that changes visibility</li>
+          <li>Visible abs typically appear at ~10–14% BF (men) or ~18–22% BF (women)</li>
+          <li>No rep volume of crunches removes the fat layer sitting above the abdominal muscles</li>
+          <li>Zone 2 cardio on rest days creates the caloric deficit that reveals what you're already building</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- PROGRESSIVE OVERLOAD -->
+  <div>
+    <div class="section-label">// progressive overload — the only rule that matters</div>
+    <p style="color:#888;font-size:14px;max-width:680px;margin-bottom:20px;">Your body has no reason to add muscle unless it's consistently asked to do more than before. Progressive overload is the mechanism that forces adaptation. Everything else — nutrition, sleep, technique — exists to serve this principle.</p>
+    <div class="tips-grid">
+      <div class="tip-box">
+        <div class="tip-num">01</div>
+        <p>Track every set, rep, and weight without exception. You cannot "feel" progress — you must see it written. If a number hasn't moved in 3 weeks: sleep, calories, or programme design is the problem. Investigate in that order.</p>
+      </div>
+      <div class="tip-box">
+        <div class="tip-num">02</div>
+        <p><strong style="color:#ccc">Double progression:</strong> Hit the top of your rep range (e.g., 8) on every set before adding load. Hit 4×8 this week → add 2.5 kg next week. Stuck at 4×6 → repeat the weight, fix the technique or rest quality first.</p>
+      </div>
+      <div class="tip-box">
+        <div class="tip-num">03</div>
+        <p><strong style="color:#ccc">Deload every 6–8 weeks:</strong> Drop to 50% load for one full week. This is how supercompensation works. The week after a proper deload is consistently the strongest week of any training block, not the weakest.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function toggle(el) {
+  el.classList.toggle('open');
+}
+function toggleWarmup(id) {
+  const block = document.getElementById(id);
+  block.classList.toggle('open');
+}
+</script>
+</body>
+</html>
